@@ -1,80 +1,53 @@
-# DeepFake Detection Using ResNext50-LSTM
+# DeepFake Detection Using CNN-LSTM
 
 This project implements a deepfake video classification system using a combination of ResNeXt-50 (for spatial feature extraction) and LSTM (for temporal sequence modeling). The model is trained to distinguish between real and fake videos from the Celeb-DF dataset.
 
 ## Dataset
 
-- Source: Celeb-DF (v1)
-- Number of videos:
+- **Source:** Celeb-DF (v1)
+- **Composition:**
   - 432 fake videos
   - 428 real videos
-- Labeling:
-  - Fake: 1
-  - Real: 0
-- A dictionary is used to map each video path to its corresponding label.
 
 ## Preprocessing Pipeline
 
-1. **Frame Extraction**  
-   Videos are trimmed to a maximum of 150 frames using OpenCV.
-
-2. **Face Detection and Cropping**  
-   Faces are detected in each frame. If no face is detected, the issue is logged for debugging. From the 150 frames, 10 frames with detected faces are selected for further processing.
-
-3. **Frame Transformation**  
-   The selected frames are resized and normalized to fit the input requirements of the pretrained ResNeXt-50 model.
+1. **Video Trimming:** Each video is trimmed to 150 frames using OpenCV.
+2. **Face Extraction:** Faces are cropped from these 150 frames. From these, 10 frames with valid face detections are selected per video.
+3. **Debugging Support:** The frame extraction function displays videos with no face detections to aid debugging.
+4. **Transformations:** Selected face frames are resized and transformed into the appropriate shape for ResNeXt-50 input.
 
 ## Model Architecture
 
-1. **Spatial Feature Extraction**  
-   A pretrained ResNeXt-50 model extracts features from each of the 10 selected frames per video.
+- **CNN Backbone:** Pretrained ResNeXt-50 used to extract spatial features from each frame.
+- **Temporal Modeling:** Features from 10 frames are passed through an LSTM to capture sequential dependencies.
+- **Classification Head:** A final linear layer outputs class logits.
+- **Loss Function:** CrossEntropyLoss with class weights to handle class imbalance.
 
-2. **Temporal Modeling**  
-   An LSTM layer captures temporal dependencies across the 10-frame sequence.
+## Label Mapping
 
-3. **Classification**  
-   The output of the LSTM is passed through a linear layer for binary classification (real or fake).  
-   CrossEntropyLoss with class weighting is used to handle class imbalance.
+- Real: `0`
+- Fake: `1`
 
-## Training and Testing
+## Frameworks Used
 
-- Training accuracy: 89.7%
-- Training loss: 0.17
-- Testing accuracy: 98.26%
-
-A confusion matrix is generated after testing to confirm that the model is not biased toward a single class.
-
-## Highlights
-
-- Full video preprocessing pipeline including trimming, face detection, and frame selection
-- Real-time debug messages for missing face detections
-- Efficient spatial-temporal modeling using ResNeXt and LSTM
-- Clear performance metrics and confusion matrix visualization
-
-## Dependencies
-
-- Python 3.x
 - PyTorch
 - OpenCV
-- torchvision
-- matplotlib
-- scikit-learn
-- seaborn
 
-## How to Run
+## Training Results
 
-1. Install dependencies:
-   ```
-   pip install -r requirements.txt
-   ```
+- **Training Accuracy:** 89.7%
+- **Training Loss:** 0.17
 
-2. Train the model:
-   ```
-   python train.py
-   ```
+## Testing Results
 
-3. Test the model and view the confusion matrix:
-   ```
-   python test.py
-   ```
+- **Testing Accuracy:** 98.26%
+- **Average Test Loss:** 0.0703
 
+### Confusion Matrix
+
+|               | Predicted: Real (0) | Predicted: Fake (1) |
+|---------------|---------------------|----------------------|
+| **Actual: Real (0)** | 86                  | 2                    |
+| **Actual: Fake (1)** | 1                   | 83                   |
+
+![Confusion Matrix](f5bdd776-3185-4c37-8ef5-89b6bbc0f386.png)
