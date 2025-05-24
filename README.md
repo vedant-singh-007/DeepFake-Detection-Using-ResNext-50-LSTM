@@ -1,94 +1,80 @@
-# DeepFake-Detection-Using-ResNext-50-LSTM
+# DeepFake Detection Using ResNext50-LSTM
 
 This project implements a deepfake video classification system using a combination of ResNeXt-50 (for spatial feature extraction) and LSTM (for temporal sequence modeling). The model is trained to distinguish between real and fake videos from the Celeb-DF dataset.
 
-Dataset
-Source: Celeb-DF (v1)
+## Dataset
 
-Number of videos:
+- Source: Celeb-DF (v1)
+- Number of videos:
+  - 432 fake videos
+  - 428 real videos
+- Labeling:
+  - Fake: 1
+  - Real: 0
+- A dictionary is used to map each video path to its corresponding label.
 
-432 fake videos
+## Preprocessing Pipeline
 
-428 real videos
+1. **Frame Extraction**  
+   Videos are trimmed to a maximum of 150 frames using OpenCV.
 
-Labeling:
+2. **Face Detection and Cropping**  
+   Faces are detected in each frame. If no face is detected, the issue is logged for debugging. From the 150 frames, 10 frames with detected faces are selected for further processing.
 
-Fake: 1
+3. **Frame Transformation**  
+   The selected frames are resized and normalized to fit the input requirements of the pretrained ResNeXt-50 model.
 
-Real: 0
+## Model Architecture
 
-A dictionary is used to map each video path to its corresponding label.
+1. **Spatial Feature Extraction**  
+   A pretrained ResNeXt-50 model extracts features from each of the 10 selected frames per video.
 
-Preprocessing Pipeline
-Frame Extraction
-Videos are trimmed to a maximum of 150 frames using OpenCV.
+2. **Temporal Modeling**  
+   An LSTM layer captures temporal dependencies across the 10-frame sequence.
 
-Face Detection and Cropping
-Faces are detected in each frame. If no face is detected, the issue is logged for debugging. From the 150 frames, 10 frames with detected faces are selected for further processing.
+3. **Classification**  
+   The output of the LSTM is passed through a linear layer for binary classification (real or fake).  
+   CrossEntropyLoss with class weighting is used to handle class imbalance.
 
-Frame Transformation
-The selected frames are resized and normalized to fit the input requirements of the pretrained ResNeXt-50 model.
+## Training and Testing
 
-Model Architecture
-Spatial Feature Extraction
-A pretrained ResNeXt-50 model extracts features from each of the 10 selected frames per video.
-
-Temporal Modeling
-An LSTM layer captures temporal dependencies across the 10-frame sequence.
-
-Classification
-The output of the LSTM is passed through a linear layer for binary classification (real or fake).
-CrossEntropyLoss with class weighting is used to handle class imbalance.
-
-Training and Testing
-Training accuracy: 89.7%
-
-Training loss: 0.17
-
-Testing accuracy: 98.26%
+- Training accuracy: 89.7%
+- Training loss: 0.17
+- Testing accuracy: 98.26%
 
 A confusion matrix is generated after testing to confirm that the model is not biased toward a single class.
 
-Highlights
-Full video preprocessing pipeline including trimming, face detection, and frame selection
+## Highlights
 
-Real-time debug messages for missing face detections
+- Full video preprocessing pipeline including trimming, face detection, and frame selection
+- Real-time debug messages for missing face detections
+- Efficient spatial-temporal modeling using ResNeXt and LSTM
+- Clear performance metrics and confusion matrix visualization
 
-Efficient spatial-temporal modeling using ResNeXt and LSTM
+## Dependencies
 
-Clear performance metrics and confusion matrix visualization
+- Python 3.x
+- PyTorch
+- OpenCV
+- torchvision
+- matplotlib
+- scikit-learn
+- seaborn
 
-Dependencies
-Python 3.x
+## How to Run
 
-PyTorch
+1. Install dependencies:
+   ```
+   pip install -r requirements.txt
+   ```
 
-OpenCV
+2. Train the model:
+   ```
+   python train.py
+   ```
 
-torchvision
+3. Test the model and view the confusion matrix:
+   ```
+   python test.py
+   ```
 
-matplotlib
-
-scikit-learn
-
-seaborn
-
-How to Run
-Install dependencies:
-
-nginx
-Copy
-Edit
-pip install -r requirements.txt
-Train the model:
-
-nginx
-Copy
-Edit
-python train.py
-Test the model and view the confusion matrix:
-
-nginx
-Copy
-Edit
-python test.py
