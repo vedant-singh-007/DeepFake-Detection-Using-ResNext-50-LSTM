@@ -1,4 +1,4 @@
-# DeepFake Detection Using CNN-LSTM
+# DeepFake Detection Using ResNext50-LSTM
 
 This project implements a deepfake video classification system using a combination of ResNeXt-50 (for spatial feature extraction) and LSTM (for temporal sequence modeling). The model is trained to distinguish between real and fake videos from the Celeb-DF dataset.
 
